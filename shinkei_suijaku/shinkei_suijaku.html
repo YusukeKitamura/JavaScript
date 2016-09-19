@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>神経衰弱</title>
+
+        <!-- Bootstrap -->
+        <link href="/assets/css/bootstrap.css" rel="stylesheet">
+        <link href="/assets/font-awesome/css/font-awesome.css" rel="stylesheet">
+        <link href="/assets/css/form.css" rel="stylesheet">
+        <link href="/assets/css/timeline.css" rel="stylesheet">
+        <link href="/assets/css/main.css" rel="stylesheet">
+        <link href="shinkei_suijaku.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <div id="stage"></div>
+        <div id="turns"></div>
+        <div id="congrat"></div>
+        <script>
+            (function() {
+                var cards = [],
+                        level = 13,
+                        flipCount = 0,
+                        correctCount = 0,
+                        turnCount = 0,
+                        firstCard = null,
+                        secondCard = null,
+                        stage;
+
+                        stage = document.getElementById('stage');
+                        init();
+
+                    function init() {
+
+                        correctCount = 0;
+                        turnCount = 0;
+
+                        while (stage.firstChild) {
+                            stage.removeChild(stage.firstChild);
+                        }
+
+                        for (var i = 1; i <= level; i++) {
+                            cards[cards.length] = createCard(i, '♠️');
+                            cards[cards.length] = createCard(i, '♥');
+                            cards[cards.length] = createCard(i, '♦');
+                            cards[cards.length] = createCard(i, '♣︎');
+                        }
+
+                        while (cards.length) {
+                            var pos = Math.floor(Math.random() * cards.length);
+                            stage.appendChild(cards.splice(pos, 1)[0])
+                        }
+                        document.getElementById("turns").innerHTML = '<label>Total: '+turnCount+'</label>';
+                    }
+
+                    function createCard(num, mark) {
+                        var inner, card, container;
+
+                        inner = '<div class="card-back">?</div><div class="card-front">*</div>';
+
+                        card = document.createElement('div');
+                        card.className = 'card';
+                        card.innerHTML = inner.replace('*', num + ' ' + mark);
+                        card.addEventListener('click', function() {
+                            flipCard(this);
+                        })
+
+                        container = document.createElement('div');
+                        container.className = 'card-container';
+                        container.appendChild(card);
+
+                        return container;
+                    }
+
+                    function flipCard(card) {
+                        if (firstCard !== null && secondCard !== null) {
+                            return
+                        }
+                        if (card.className.indexOf('open') === -1) {
+                            card.className = 'card open';
+                        } else {
+                            return;
+                        }
+                        flipCount++;
+                        if (flipCount % 2 === 1) {
+                            firstCard = card;
+                        } else {
+                            secondCard = card;
+                            setTimeout(function() {
+                                judge();
+                            }, 800);
+                        }
+                    }
+
+                    function judge() {
+                        if (firstCard.children[1].textContent.substring(0, 2) ===
+                            secondCard.children[1].textContent.substring(0, 2)) {
+                            correctCount++;
+                        } else {
+                            firstCard.className = 'card';
+                            secondCard.className = 'card';
+                        }
+                        firstCard = null;
+                        secondCard = null;
+                        turnCount++;
+                        document.getElementById("turns").innerHTML = '<label>Total: '+turnCount+'</label>';
+                        if (correctCount === level * 2) {
+                            document.getElementById("congrat").innerHTML = 'Congratulations!!!';
+                        }
+                    }
+
+                })();
+            </script>
+            <p style="text-align: center;">
+                <span style="background-color:#ffff00;"><a href="http://yk0807.com/index.html">トップに戻る</a></span>
+            </p>
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="/assets/js/bootstrap.js"></script>
+    </body>
+</html>
